@@ -11,81 +11,319 @@ from pathlib import Path
 class PDFAddressExtractorGUI:
     def __init__(self, root):
         self.root = root
-        self.root.title("PDF Address Extractor")
-        self.root.geometry("800x600")
-        self.root.configure(bg='#f0f0f0')
+        self.root.title("� Address Extractor Pro")
+        self.root.geometry("900x700")
+        self.root.configure(bg='#f8f9fa')
+        self.root.resizable(True, True)
+        
+        # Set window icon and styling
+        try:
+            # Try to set a custom icon if available
+            icon_path = os.path.join(os.path.dirname(__file__), "app_icon.ico")
+            if os.path.exists(icon_path):
+                self.root.iconbitmap(icon_path)
+            else:
+                # Create a simple text-based icon using tkinter's built-in method
+                self.root.iconname("AddressExtractor")
+        except:
+            pass
         
         # Variables
         self.pdf_folder_path = tk.StringVar()
         self.excel_file_path = tk.StringVar(value="addresses.xlsx")
         self.extraction_running = False
         
+        self.setup_modern_styles()
         self.setup_ui()
         
+    def setup_modern_styles(self):
+        """Configure modern ttk styles"""
+        self.style = ttk.Style()
+        
+        # Use a modern theme as base
+        self.style.theme_use('clam')
+        
+        # Configure modern colors
+        colors = {
+            'primary': '#2563eb',      # Blue
+            'primary_dark': '#1d4ed8',
+            'secondary': '#64748b',    # Slate
+            'success': '#059669',      # Green
+            'danger': '#dc2626',       # Red
+            'warning': '#d97706',      # Orange
+            'light': '#f8fafc',        # Light gray
+            'dark': '#1e293b',         # Dark gray
+            'white': '#ffffff',
+            'border': '#e2e8f0'
+        }
+        
+        # Configure button styles
+        self.style.configure('Primary.TButton',
+                           background=colors['primary'],
+                           foreground='white',
+                           borderwidth=0,
+                           focuscolor='none',
+                           padding=(20, 12))
+        
+        self.style.map('Primary.TButton',
+                      background=[('active', colors['primary_dark']),
+                                ('pressed', colors['primary_dark'])])
+        
+        self.style.configure('Secondary.TButton',
+                           background=colors['secondary'],
+                           foreground='white',
+                           borderwidth=0,
+                           focuscolor='none',
+                           padding=(16, 10))
+        
+        self.style.map('Secondary.TButton',
+                      background=[('active', colors['dark']),
+                                ('pressed', colors['dark'])])
+        
+        self.style.configure('Success.TButton',
+                           background=colors['success'],
+                           foreground='white',
+                           borderwidth=0,
+                           focuscolor='none',
+                           padding=(16, 10))
+        
+        self.style.map('Success.TButton',
+                      background=[('active', '#047857'),
+                                ('pressed', '#047857')])
+        
+        # Configure frame styles
+        self.style.configure('Card.TFrame',
+                           background='white',
+                           relief='flat',
+                           borderwidth=1)
+        
+        self.style.configure('Header.TFrame',
+                           background=colors['primary'],
+                           relief='flat')
+        
+        # Configure label styles
+        self.style.configure('Title.TLabel',
+                           background='white',
+                           foreground=colors['dark'],
+                           font=('Segoe UI', 24, 'bold'))
+        
+        self.style.configure('Subtitle.TLabel',
+                           background='white',
+                           foreground=colors['secondary'],
+                           font=('Segoe UI', 11))
+        
+        self.style.configure('CardTitle.TLabel',
+                           background='white',
+                           foreground=colors['dark'],
+                           font=('Segoe UI', 12, 'bold'))
+        
+        self.style.configure('FieldLabel.TLabel',
+                           background='white',
+                           foreground=colors['dark'],
+                           font=('Segoe UI', 10))
+        
+        # Configure entry styles
+        self.style.configure('Modern.TEntry',
+                           fieldbackground='white',
+                           borderwidth=2,
+                           relief='solid',
+                           insertcolor=colors['primary'],
+                           padding=(12, 8))
+        
+        # Configure progressbar styles
+        self.style.configure('Modern.Horizontal.TProgressbar',
+                           background=colors['primary'],
+                           troughcolor='#e5e7eb',
+                           borderwidth=0,
+                           lightcolor=colors['primary'],
+                           darkcolor=colors['primary'])
+        
+        # Configure labelframe styles
+        self.style.configure('Modern.TLabelframe',
+                           background='white',
+                           relief='flat',
+                           borderwidth=0)
+        
+        self.style.configure('Modern.TLabelframe.Label',
+                           background='white',
+                           foreground=colors['dark'],
+                           font=('Segoe UI', 12, 'bold'))
+        
     def setup_ui(self):
-        # Main frame
-        main_frame = ttk.Frame(self.root, padding="20")
-        main_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
+        # Create main container with padding
+        main_container = tk.Frame(self.root, bg='#f8f9fa')
+        main_container.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
         
         # Configure grid weights
-        self.root.columnconfigure(0, weight=1)
-        self.root.rowconfigure(0, weight=1)
-        main_frame.columnconfigure(1, weight=1)
+        main_container.grid_rowconfigure(1, weight=1)
+        main_container.grid_columnconfigure(0, weight=1)
         
-        # Title
-        title_label = ttk.Label(main_frame, text="PDF Address Extractor", 
-                               font=('Arial', 16, 'bold'))
-        title_label.grid(row=0, column=0, columnspan=3, pady=(0, 20))
+        # Header section
+        self.create_header(main_container)
         
-        # PDF Folder Selection
-        ttk.Label(main_frame, text="PDF Folder:").grid(row=1, column=0, sticky=tk.W, pady=5)
-        ttk.Entry(main_frame, textvariable=self.pdf_folder_path, width=50).grid(
-            row=1, column=1, sticky=(tk.W, tk.E), pady=5, padx=(10, 5))
-        ttk.Button(main_frame, text="Browse", 
-                  command=self.browse_pdf_folder).grid(row=1, column=2, pady=5)
+        # Main content area
+        content_frame = tk.Frame(main_container, bg='#f8f9fa')
+        content_frame.grid(row=1, column=0, sticky=(tk.W, tk.E, tk.N, tk.S), pady=(20, 0))
+        content_frame.grid_rowconfigure(2, weight=1)
+        content_frame.grid_columnconfigure(0, weight=1)
         
-        # Excel File Selection
-        ttk.Label(main_frame, text="Excel File:").grid(row=2, column=0, sticky=tk.W, pady=5)
-        ttk.Entry(main_frame, textvariable=self.excel_file_path, width=50).grid(
-            row=2, column=1, sticky=(tk.W, tk.E), pady=5, padx=(10, 5))
-        ttk.Button(main_frame, text="Browse", 
-                  command=self.browse_excel_file).grid(row=2, column=2, pady=5)
+        # File selection card
+        self.create_file_selection_card(content_frame)
         
-        # Buttons frame
-        buttons_frame = ttk.Frame(main_frame)
-        buttons_frame.grid(row=3, column=0, columnspan=3, pady=20)
+        # Action buttons card
+        self.create_action_buttons_card(content_frame)
         
-        self.extract_button = ttk.Button(buttons_frame, text="Extract Addresses", 
-                                        command=self.extract_addresses_threaded,
-                                        style='Accent.TButton')
-        self.extract_button.pack(side=tk.LEFT, padx=5)
+        # Status and progress card
+        self.create_status_card(content_frame)
         
-        self.clear_button = ttk.Button(buttons_frame, text="Clear Spreadsheet", 
-                                      command=self.clear_spreadsheet)
-        self.clear_button.pack(side=tk.LEFT, padx=5)
-        
-        # Progress bar
-        self.progress = ttk.Progressbar(main_frame, mode='indeterminate')
-        self.progress.grid(row=4, column=0, columnspan=3, sticky=(tk.W, tk.E), pady=10)
-        
-        # Status frame
-        status_frame = ttk.LabelFrame(main_frame, text="Status", padding="10")
-        status_frame.grid(row=5, column=0, columnspan=3, sticky=(tk.W, tk.E, tk.N, tk.S), pady=10)
-        status_frame.columnconfigure(0, weight=1)
-        status_frame.rowconfigure(0, weight=1)
-        
-        # Status text area
-        self.status_text = scrolledtext.ScrolledText(status_frame, height=15, width=70)
-        self.status_text.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
-        
-        # Configure main frame row weights
-        main_frame.rowconfigure(5, weight=1)
-        
-        # Set default folder to current directory
+        # Set default folder
         current_dir = os.path.dirname(os.path.abspath(__file__))
         self.pdf_folder_path.set(current_dir)
         
-        self.log_message("Application started. Ready to extract addresses from PDFs.")
+        self.log_message("🚀 Address Extractor Pro started. Ready to extract addresses from PDFs.")
+        
+    def create_header(self, parent):
+        """Create modern header section"""
+        header_frame = ttk.Frame(parent, style='Card.TFrame')
+        header_frame.grid(row=0, column=0, sticky=(tk.W, tk.E), pady=(0, 10))
+        header_frame.grid_columnconfigure(0, weight=1)
+        
+        # Add padding inside the card
+        header_content = tk.Frame(header_frame, bg='white')
+        header_content.pack(fill=tk.BOTH, expand=True, padx=30, pady=25)
+        
+        # Title with icon
+        title_frame = tk.Frame(header_content, bg='white')
+        title_frame.pack(anchor=tk.W)
+        
+        title_label = ttk.Label(title_frame, text="🏢📋 Address Extractor Pro", style='Title.TLabel')
+        title_label.pack(side=tk.LEFT)
+        
+        # Subtitle
+        subtitle_label = ttk.Label(header_content, 
+                                 text="Extract addresses from PDF files and save to Excel spreadsheets", 
+                                 style='Subtitle.TLabel')
+        subtitle_label.pack(anchor=tk.W, pady=(5, 0))
+        
+    def create_file_selection_card(self, parent):
+        """Create file selection card"""
+        card_frame = ttk.Frame(parent, style='Card.TFrame')
+        card_frame.grid(row=0, column=0, sticky=(tk.W, tk.E), pady=(0, 15))
+        card_frame.grid_columnconfigure(1, weight=1)
+        
+        # Card content with padding
+        content = tk.Frame(card_frame, bg='white')
+        content.pack(fill=tk.BOTH, expand=True, padx=25, pady=20)
+        content.grid_columnconfigure(1, weight=1)
+        
+        # Card title
+        ttk.Label(content, text="📁 File Selection", style='CardTitle.TLabel').grid(
+            row=0, column=0, columnspan=3, sticky=tk.W, pady=(0, 20))
+        
+        # PDF Folder Selection
+        ttk.Label(content, text="PDF Folder:", style='FieldLabel.TLabel').grid(
+            row=1, column=0, sticky=tk.W, pady=(0, 15), padx=(0, 15))
+        
+        pdf_entry = ttk.Entry(content, textvariable=self.pdf_folder_path, 
+                             style='Modern.TEntry', font=('Segoe UI', 10))
+        pdf_entry.grid(row=1, column=1, sticky=(tk.W, tk.E), pady=(0, 15), padx=(0, 10))
+        
+        pdf_browse_btn = ttk.Button(content, text="📂 Browse", 
+                                   command=self.browse_pdf_folder, style='Secondary.TButton')
+        pdf_browse_btn.grid(row=1, column=2, pady=(0, 15))
+        
+        # Excel File Selection
+        ttk.Label(content, text="Excel File:", style='FieldLabel.TLabel').grid(
+            row=2, column=0, sticky=tk.W, padx=(0, 15))
+        
+        excel_entry = ttk.Entry(content, textvariable=self.excel_file_path, 
+                               style='Modern.TEntry', font=('Segoe UI', 10))
+        excel_entry.grid(row=2, column=1, sticky=(tk.W, tk.E), padx=(0, 10))
+        
+        excel_browse_btn = ttk.Button(content, text="📊 Browse", 
+                                     command=self.browse_excel_file, style='Secondary.TButton')
+        excel_browse_btn.grid(row=2, column=2)
+        
+    def create_action_buttons_card(self, parent):
+        """Create action buttons card"""
+        card_frame = ttk.Frame(parent, style='Card.TFrame')
+        card_frame.grid(row=1, column=0, sticky=(tk.W, tk.E), pady=(0, 15))
+        
+        # Card content with padding
+        content = tk.Frame(card_frame, bg='white')
+        content.pack(fill=tk.BOTH, expand=True, padx=25, pady=20)
+        
+        # Card title
+        ttk.Label(content, text="⚡ Actions", style='CardTitle.TLabel').pack(
+            anchor=tk.W, pady=(0, 20))
+        
+        # Buttons container
+        buttons_frame = tk.Frame(content, bg='white')
+        buttons_frame.pack(anchor=tk.W)
+        
+        # Extract button with icon
+        self.extract_button = ttk.Button(buttons_frame, text="🔍 Extract Addresses", 
+                                        command=self.extract_addresses_threaded,
+                                        style='Primary.TButton')
+        self.extract_button.pack(side=tk.LEFT, padx=(0, 15))
+        
+        # Clear button
+        self.clear_button = ttk.Button(buttons_frame, text="🧹 Clear Spreadsheet", 
+                                      command=self.clear_spreadsheet,
+                                      style='Secondary.TButton')
+        self.clear_button.pack(side=tk.LEFT)
+        
+        # Progress bar (initially hidden)
+        self.progress_frame = tk.Frame(content, bg='white')
+        self.progress_frame.pack(fill=tk.X, pady=(20, 0))
+        
+        ttk.Label(self.progress_frame, text="Processing...", 
+                 style='FieldLabel.TLabel').pack(anchor=tk.W, pady=(0, 5))
+        
+        self.progress = ttk.Progressbar(self.progress_frame, mode='indeterminate', 
+                                       style='Modern.Horizontal.TProgressbar')
+        self.progress.pack(fill=tk.X)
+        
+        # Hide progress initially
+        self.progress_frame.pack_forget()
+        
+    def create_status_card(self, parent):
+        """Create status and log card"""
+        card_frame = ttk.Frame(parent, style='Card.TFrame')
+        card_frame.grid(row=2, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
+        card_frame.grid_rowconfigure(1, weight=1)
+        card_frame.grid_columnconfigure(0, weight=1)
+        
+        # Card content with padding
+        content = tk.Frame(card_frame, bg='white')
+        content.pack(fill=tk.BOTH, expand=True, padx=25, pady=20)
+        content.grid_rowconfigure(1, weight=1)
+        content.grid_columnconfigure(0, weight=1)
+        
+        # Card title
+        ttk.Label(content, text="📋 Status Log", style='CardTitle.TLabel').grid(
+            row=0, column=0, sticky=tk.W, pady=(0, 15))
+        
+        # Status text area with modern styling
+        text_frame = tk.Frame(content, bg='#f8fafc', relief='solid', bd=1)
+        text_frame.grid(row=1, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
+        text_frame.grid_rowconfigure(0, weight=1)
+        text_frame.grid_columnconfigure(0, weight=1)
+        
+        self.status_text = scrolledtext.ScrolledText(
+            text_frame, 
+            height=12, 
+            width=70,
+            bg='#f8fafc',
+            fg='#334155',
+            font=('Consolas', 10),
+            relief='flat',
+            borderwidth=0,
+            insertbackground='#2563eb',
+            selectbackground='#dbeafe',
+            wrap=tk.WORD
+        )
+        self.status_text.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S), padx=15, pady=15)
         
     def browse_pdf_folder(self):
         folder = filedialog.askdirectory(title="Select PDF Folder")
@@ -167,6 +405,7 @@ class PDFAddressExtractorGUI:
         try:
             self.extraction_running = True
             self.extract_button.config(state='disabled')
+            self.progress_frame.pack(fill=tk.X, pady=(20, 0))
             self.progress.start()
             
             # Validate inputs
@@ -255,6 +494,7 @@ class PDFAddressExtractorGUI:
             self.extraction_running = False
             self.extract_button.config(state='normal')
             self.progress.stop()
+            self.progress_frame.pack_forget()
     
     def clear_spreadsheet(self):
         """Clear the contents of the Excel spreadsheet"""
