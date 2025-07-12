@@ -1,0 +1,61 @@
+import PyPDF2
+from openpyxl import Workbook, load_workbook
+import glob
+from win32com.client import Dispatch
+import pathlib
+
+
+
+def extract_text_from_pdfs():
+    pdf_texts = {}
+    
+    # Use glob to find all PDF files in the current directory
+    pdf_files = glob.glob('*.pdf')
+    
+    for file_path in pdf_files:
+        with open(file_path, 'rb') as pdf_file:
+            reader = PyPDF2.PdfReader(pdf_file)
+            text = ''
+            for page_num in range(len(reader.pages)):
+                page = reader.pages[page_num]
+                text += page.extract_text()
+            
+            # Extract text between ".com" and "Dear"
+            start = text.find("uk_team_gbmailgps@lilly.com")
+            end = text.find("Dear")
+            if start != -1 and end != -1:
+                lines = text[start + 5:end].split('\n')
+                lines = [text for text in lines if text != " "]
+                extracted_text = '\n'.join(lines[2:])
+                pdf_texts[file_path] = extracted_text
+
+    return pdf_texts
+
+wb = load_workbook('addresses.xlsx')
+sheet = wb.active
+
+pdf_texts = extract_text_from_pdfs()
+
+# Write extracted texts to Excel sheet
+row = 1  # Start from row 1 since there's no header
+for pdf, text in pdf_texts.items():
+    sheet.cell(row=row, column=1).value = text  # Extracted text in column B
+    row += 1
+
+# Save the updated workbook
+wb.save('addresses.xlsx')
+wb.close()
+
+#letterLabel_path = pathlib.Path("./label.dymo")
+#myprinter = ""
+#printer_com = Dispatch('Dymo.DymoAddIn')
+#print(printer_com.GetDymoPrinters())
+#lprinter_com.SelectPrinter(myprinter)
+# printer_com.Open(letterLabel_path)
+
+#printer_label = Dispatch('Dymo.DymoLabels')
+# printer_label.SetField('')
+
+# printer_com.StartPrintJob()
+# printer_com.Print(1,False)
+# printer_com.EndPrintJob()
