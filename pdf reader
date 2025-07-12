@@ -46,16 +46,3 @@ for pdf, text in pdf_texts.items():
 wb.save('addresses.xlsx')
 wb.close()
 
-#letterLabel_path = pathlib.Path("./label.dymo")
-#myprinter = ""
-#printer_com = Dispatch('Dymo.DymoAddIn')
-#print(printer_com.GetDymoPrinters())
-#lprinter_com.SelectPrinter(myprinter)
-# printer_com.Open(letterLabel_path)
-
-#printer_label = Dispatch('Dymo.DymoLabels')
-# printer_label.SetField('')
-
-# printer_com.StartPrintJob()
-# printer_com.Print(1,False)
-# printer_com.EndPrintJob()
