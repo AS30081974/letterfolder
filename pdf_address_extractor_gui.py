@@ -280,7 +280,7 @@ class PDFAddressExtractorGUI:
         print_frame.pack(side=tk.LEFT, padx=(0, 15))
         
         # Print Visible button
-        self.print_visible_button = ttk.Button(print_frame, text="🖨️👁️ Print (Visible)", 
+        self.print_visible_button = ttk.Button(print_frame, text="🖨️ Print PDFs", 
                                               command=self.print_pdfs_visible,
                                               style='Success.TButton')
         self.print_visible_button.pack(side=tk.TOP, pady=(0, 5))
@@ -355,7 +355,7 @@ class PDFAddressExtractorGUI:
             self.log_message(f"PDF folder selected: {folder}")
     
     def browse_excel_file(self):
-        file = filedialog.asksaveasfilename(
+        file = filedialog.askopenfilename(
             title="Select Excel File",
             defaultextension=".xlsx",
             filetypes=[("Excel files", "*.xlsx"), ("All files", "*.*")]
@@ -576,7 +576,7 @@ class PDFAddressExtractorGUI:
                 if os.path.exists(path):
                     self.adobe_path = path
                     app_name = "Acrobat" if "Acrobat.exe" in path else "Adobe Reader"
-                    self.log_message(f"✅ Found {app_name} for printing functionality")
+                    self.log_message(f"✅ Found {app_name} - Background printing mode available")
                     return
             
             # Try to find through registry
@@ -585,18 +585,18 @@ class PDFAddressExtractorGUI:
                                    r"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\AcroRd32.exe")
                 self.adobe_path, _ = winreg.QueryValueEx(key, "")
                 winreg.CloseKey(key)
-                self.log_message(f"✅ Found Adobe Reader through registry for printing")
+                self.log_message(f"✅ Found Adobe Reader through registry - Background printing mode available")
                 return
             except:
                 pass
             
-            self.log_message("⚠️ Adobe Reader/Acrobat not found. Print functionality will use system default.")
+            self.log_message("⚠️ Adobe Reader/Acrobat not found. Will use visible printing mode with system default.")
             
         except Exception as e:
             self.log_message(f"❌ Error finding Adobe: {e}")
     
     def print_pdfs_visible(self):
-        """Print PDFs with visible windows and automation"""
+        """Print PDFs - background if Adobe exists, visible otherwise"""
         self.print_pdfs_threaded()
     
     def print_pdfs_threaded(self):
@@ -639,28 +639,53 @@ class PDFAddressExtractorGUI:
                 messagebox.showinfo("Info", "No PDF files found in the selected folder.")
                 return
             
+            # Determine print mode based on Adobe availability
+            if self.adobe_path and os.path.exists(self.adobe_path):
+                print_mode = "Background"
+                mode_description = (
+                    f"Using BACKGROUND printing with Adobe:\n"
+                    f"    • PDFs will print directly without opening windows\n"
+                    f"    • You can continue using your computer normally\n"
+                    f"    • Each file takes approximately 2-3 seconds\n"
+                    f"    • Print jobs will appear in your printer queue\n"
+                    f"    • If background printing fails, will automatically fallback to visible mode"
+                )
+                warning = ""
+            else:
+                print_mode = "Visible"
+                mode_description = (
+                    f"Using VISIBLE printing (Adobe not found):\n"
+                    f"    • Each PDF will open visibly on screen\n"
+                    f"    • Print commands will be automated (Ctrl+P, Enter)\n"
+                    f"    • Each file takes approximately 10-15 seconds"
+                )
+                warning = f"\n⚠️ IMPORTANT: Please do not use keyboard or mouse during printing.\n"
+            
             # Ask user for confirmation
             result = messagebox.askyesno(
-                "Print PDFs - Visible Mode", 
-                f"Ready to print {len(pdf_files)} PDF files using visible automation?\n\n"
+                f"Print PDFs - {print_mode} Mode", 
+                f"Ready to print {len(pdf_files)} PDF files?\n\n"
                 f"📌 Stapling Setup Instructions:\n"
                 f"    • Open Printers & Scanners settings\n"
                 f"    • Select XWCSmartPrint\n"
                 f"    • Click 'Print Properties'\n"
                 f"    • Under 'Presets', select '1 Staple, 2-Sided' and apply\n\n"
-                f"Process Information:\n"
-                f"    • Each PDF will open visibly on screen\n"
-                f"    • Print commands will be automated (Ctrl+P, Enter)\n"
-                f"    • Each file takes approximately 10-15 seconds\n\n"
-                f"⚠️ IMPORTANT: Please do not use keyboard or mouse during printing.\n\n"
+                f"Print Mode Information:\n"
+                f"{mode_description}"
+                f"{warning}\n"
                 f"Proceed with printing?"
             )
             
             if not result:
                 return
             
-            self.log_message(f"🖨️ Starting VISIBLE printing of {len(pdf_files)} PDF files...")
-            self.log_message(f"⚠️ IMPORTANT: Please do not use your computer during printing!")
+            # Log the print mode being used
+            if self.adobe_path and os.path.exists(self.adobe_path):
+                self.log_message(f"🖨️ Starting BACKGROUND printing of {len(pdf_files)} PDF files...")
+                self.log_message(f"✅ Using Adobe for silent background printing")
+            else:
+                self.log_message(f"🖨️ Starting VISIBLE printing of {len(pdf_files)} PDF files...")
+                self.log_message(f"⚠️ IMPORTANT: Please do not use your computer during printing!")
             
             printed_count = 0
             failed_count = 0
@@ -674,7 +699,15 @@ class PDFAddressExtractorGUI:
                     filename = os.path.basename(pdf_file)
                     self.log_message(f"🖨️ [{i+1}/{len(pdf_files)}] Processing {filename}...")
                     
-                    success = self.print_single_pdf_visible(pdf_file)
+                    # Use appropriate print method based on Adobe availability
+                    if self.adobe_path and os.path.exists(self.adobe_path):
+                        success = self.print_single_pdf_background(pdf_file)
+                        # If background printing fails, fallback to visible printing
+                        if not success:
+                            self.log_message(f"   🔄 Background printing failed, trying visible mode...")
+                            success = self.print_single_pdf_visible(pdf_file)
+                    else:
+                        success = self.print_single_pdf_visible(pdf_file)
                     
                     if success:
                         printed_count += 1
@@ -683,10 +716,11 @@ class PDFAddressExtractorGUI:
                         failed_count += 1
                         self.log_message(f"   ❌ Failed to process")
                     
-                    # Small delay between files
+                    # Delay between files (shorter for background printing)
                     if i < len(pdf_files) - 1:
-                        self.log_message(f"   ⏱️ Waiting 2 seconds before next file...")
-                        for j in range(20):  # 2 seconds with responsiveness check
+                        delay_time = 1 if (self.adobe_path and os.path.exists(self.adobe_path)) else 2
+                        self.log_message(f"   ⏱️ Waiting {delay_time} second(s) before next file...")
+                        for j in range(delay_time * 10):  # Split delay for responsiveness
                             if not self.printing_running:
                                 break
                             time.sleep(0.1)
@@ -697,13 +731,14 @@ class PDFAddressExtractorGUI:
                     self.log_message(f"   ❌ Error: {e}")
             
             if self.printing_running:  # Completed normally
-                self.log_message(f"🎉 VISIBLE printing completed!")
+                print_mode = "BACKGROUND" if (self.adobe_path and os.path.exists(self.adobe_path)) else "VISIBLE"
+                self.log_message(f"🎉 {print_mode} printing completed!")
                 self.log_message(f"✅ Successfully processed: {printed_count} files")
                 if failed_count > 0:
                     self.log_message(f"❌ Failed: {failed_count} files")
                 
                 messagebox.showinfo("Success", 
-                    f"Visible printing completed!\n\n"
+                    f"{print_mode.title()} printing completed!\n\n"
                     f"✅ Successfully processed: {printed_count} files\n"
                     f"❌ Failed: {failed_count} files\n\n"
                     f"Check your printer queue for print jobs.")
@@ -769,6 +804,43 @@ class PDFAddressExtractorGUI:
                     
         except Exception as e:
             self.log_message(f"   ❌ Visible print error: {e}")
+            return False
+    
+    def print_single_pdf_background(self, pdf_path):
+        """Print a single PDF file using background command-line printing"""
+        try:
+            if self.adobe_path and os.path.exists(self.adobe_path):
+                # Use Adobe's command-line printing with /t parameter
+                self.log_message(f"   🔄 Sending to printer via Adobe command line...")
+                
+                cmd = [self.adobe_path, '/t', pdf_path]
+                result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
+                
+                if result.returncode == 0:
+                    self.log_message(f"   📄 Print job submitted successfully")
+                    return True
+                else:
+                    self.log_message(f"   ⚠️ Adobe command failed with return code {result.returncode}")
+                    if result.stderr:
+                        self.log_message(f"   ⚠️ Error details: {result.stderr.strip()}")
+                    if result.stdout:
+                        self.log_message(f"   ℹ️ Output: {result.stdout.strip()}")
+                    return False
+            else:
+                self.log_message(f"   ❌ Adobe not available for background printing")
+                return False
+                    
+        except subprocess.TimeoutExpired:
+            self.log_message(f"   ⚠️ Background print timeout (30s) - command took too long")
+            return False
+        except FileNotFoundError:
+            self.log_message(f"   ❌ Adobe executable not found at {self.adobe_path}")
+            return False
+        except PermissionError:
+            self.log_message(f"   ❌ Permission denied accessing Adobe or PDF file")
+            return False
+        except Exception as e:
+            self.log_message(f"   ❌ Background print error: {e}")
             return False
     
     def stop_printing(self):

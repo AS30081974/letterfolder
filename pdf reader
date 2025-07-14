@@ -2,7 +2,6 @@ import PyPDF2
 from openpyxl import Workbook, load_workbook
 import glob
 from win32com.client import Dispatch
-import pathlib
 
 
 
