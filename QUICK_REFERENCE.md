@@ -3,7 +3,7 @@
 ## 🚀 Quick Start Guide
 
 ### For End Users (Zero Installation!)
-1. **Download**: Get `DocumentProcessorPro_v2.0.zip` from releases
+1. **Download**: Get `DocumentProcessorPro.zip` from releases
 2. **Extract**: Right-click ZIP → "Extract All"
 3. **Run**: Double-click `DocumentProcessorPro.exe`
 4. **Process**: Select PDF folder → Click "Process Documents"

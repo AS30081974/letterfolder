@@ -77,7 +77,7 @@ pyinstaller>=5.0.0 (for building executable)
 ### Method 1: Ready-to-Use Package (Recommended for End Users)
 **Zero Installation Required!**
 
-1. **Download**: [DocumentProcessorPro_v2.0.zip](./DocumentProcessorPro_v2.0.zip) (~37MB)
+1. **Download**: [DocumentProcessorPro.zip](./DocumentProcessorPro.zip) (~37MB)
 2. **Extract**: Right-click ZIP → "Extract All" to any location
 3. **Run**: Double-click `DocumentProcessorPro.exe`
 4. **Start Processing**: Select PDF folder → Process Documents
@@ -118,7 +118,7 @@ pyinstaller>=5.0.0 (for building executable)
    ```
 
 3. **Distribute**
-   - Share `DocumentProcessorPro_v2.0.zip` with end users
+   - Share `DocumentProcessorPro.zip` with end users
    - They just extract and run - no installation needed!
 
 ## � Windows Executable
