@@ -11,27 +11,64 @@ import winreg
 import ctypes
 from ctypes import wintypes
 from pathlib import Path
+from PIL import Image, ImageTk
 
 
 class DocumentProcessorGUI:
     def __init__(self, root):
         self.root = root
-        self.root.title("📄 Document Processor Pro")
+        self.root.title("Document Processor Pro")
         self.root.geometry("900x700")
         self.root.configure(bg='#f8f9fa')
         self.root.resizable(True, True)
         
-        # Set window icon and styling
+        # Set custom application icon
         try:
-            # Try to set a custom icon if available
-            icon_path = os.path.join(os.path.dirname(__file__), "app_icon.ico")
+            # Get the directory where the script is located
+            script_dir = os.path.dirname(os.path.abspath(__file__))
+            icon_path = os.path.join(script_dir, "app_icon.png")
+            
             if os.path.exists(icon_path):
-                self.root.iconbitmap(icon_path)
+                # Load the PNG icon using PIL and convert to PhotoImage
+                pil_image = Image.open(icon_path)
+                
+                # Resize to standard icon sizes if needed (32x32 is common for taskbar)
+                icon_sizes = [(32, 32), (16, 16)]
+                
+                # Set the icon for the window
+                pil_image_32 = pil_image.resize((32, 32), Image.Resampling.LANCZOS)
+                self.icon_photo = ImageTk.PhotoImage(pil_image_32)
+                self.root.iconphoto(True, self.icon_photo)
+                
+                # Also try to set as window icon for taskbar
+                self.root.iconname("Document Processor Pro")
+                
+                # For Windows, also try to set the window icon bitmap if we can convert it
+                try:
+                    # Convert PNG to ICO format in memory for Windows
+                    ico_path = os.path.join(script_dir, "temp_icon.ico")
+                    pil_image.save(ico_path, format='ICO', sizes=[(16, 16), (32, 32), (48, 48)])
+                    self.root.iconbitmap(ico_path)
+                    # Clean up temporary file
+                    try:
+                        os.remove(ico_path)
+                    except:
+                        pass
+                except Exception as ico_error:
+                    # If ICO conversion fails, just use the PhotoImage method
+                    pass
+                    
             else:
-                # Create a simple text-based icon using tkinter's built-in method
-                self.root.iconname("DocumentProcessor")
-        except:
-            pass
+                # Fallback: remove default tkinter icon
+                self.root.iconbitmap(default="")
+                self.root.iconname("Document Processor Pro")
+        except Exception as e:
+            # If any icon loading fails, fallback to removing default icon
+            try:
+                self.root.iconbitmap(default="")
+                self.root.iconname("Document Processor Pro")
+            except:
+                pass
         
         # Variables
         self.pdf_folder_path = tk.StringVar()
@@ -204,7 +241,7 @@ class DocumentProcessorGUI:
         title_frame = tk.Frame(header_content, bg='white')
         title_frame.pack(anchor=tk.W)
         
-        title_label = ttk.Label(title_frame, text="📄 Document Processor Pro", style='Title.TLabel')
+        title_label = ttk.Label(title_frame, text="Document Processor Pro", style='Title.TLabel')
         title_label.pack(side=tk.LEFT)
         
         # Subtitle
