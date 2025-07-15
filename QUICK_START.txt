@@ -1,0 +1,44 @@
+Document Processor Pro - Quick Start
+==========================================
+
+Welcome! You've downloaded Document Processor Pro.
+
+GETTING STARTED (3 steps):
+1. Double-click "DocumentProcessorPro.exe" to run
+2. Click "Browse" to select your PDF folder
+3. Click "Process Documents" to extract data to Excel
+
+FIRST TIME SETUP:
+- Windows may show a security warning - click "More info" then "Run anyway"
+- The app will show a professional interface with your custom icon
+- No installation or additional downloads needed!
+
+WHAT IT DOES:
+- Finds PDF files in your selected folder
+- Extracts address information between email markers and "Dear"
+- Saves results to an Excel spreadsheet
+- Can print PDFs automatically if you have Adobe Reader
+
+PRINTING SETUP (optional):
+If you want to print PDFs:
+1. Install Adobe Reader (free from adobe.com)
+2. Set up your printer for stapling if needed
+3. Use the "Print PDFs" button in the app
+
+TROUBLESHOOTING:
+- App won't start? Try running as administrator
+- No PDFs found? Check your folder has .pdf files
+- Printing issues? Install Adobe Reader for best results
+
+GETTING HELP:
+- Full documentation: See README.md in this folder
+- Quick reference: See QUICK_REFERENCE.md
+- Report problems: Visit github.com/AS30081974/letterfolder
+
+SYSTEM REQUIREMENTS:
+- Windows 7/8/10/11
+- 50MB free space
+- No other software required!
+
+Thank you for using Document Processor Pro!
+Visit our GitHub page for updates and support.

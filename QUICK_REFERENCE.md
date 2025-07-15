@@ -2,11 +2,13 @@
 
 ## 🚀 Quick Start Guide
 
-### For End Users (Windows Executable)
-1. Double-click `DocumentProcessorPro.exe`
-2. Select PDF folder
-3. Choose Excel output file
-4. Click "Process Documents"
+### For End Users (Zero Installation!)
+1. **Download**: Get `DocumentProcessorPro_v2.0.zip` from releases
+2. **Extract**: Right-click ZIP → "Extract All"
+3. **Run**: Double-click `DocumentProcessorPro.exe`
+4. **Process**: Select PDF folder → Click "Process Documents"
+
+**No Python, no installation, no admin rights needed!** ✨
 
 ### For Developers (Python Source)
 1. Install Python 3.7+
@@ -17,12 +19,14 @@
 
 | File | Purpose | Required |
 |------|---------|----------|
-| `DocumentProcessorPro.exe` | Main Windows executable | ✅ End users |
+| `DocumentProcessorPro_v2.0.zip` | 📥 **Download this!** Complete package | ✅ End users |
+| `DocumentProcessorPro.exe` | Main Windows executable | ✅ In ZIP package |
+| `QUICK_START.txt` | Simple setup instructions | ✅ In ZIP package |
+| `EASY_LAUNCH.bat` | Alternative launcher with diagnostics | 🔧 In ZIP package |
 | `pdf_address_extractor_gui.py` | Main Python application | ✅ Developers |
 | `app_icon.png` | Custom application icon | ✅ For branding |
 | `requirements.txt` | Python dependencies | ✅ Developers |
-| `simple_build.py` | Build executable script | 🔧 Building |
-| `run_document_processor.bat` | Windows launcher | 🔧 Convenience |
+| `create_distribution.bat` | Package creator script | 🔧 Building |
 
 ## 🎨 Custom Icon Features
 
@@ -76,11 +80,20 @@ python -c "import os; print(os.path.exists('app_icon.png'))"
 
 ## 📋 Checklist for New Installations
 
-### End User Setup
-- [ ] Download/extract files
-- [ ] Verify `DocumentProcessorPro.exe` is present
-- [ ] Double-click to run
-- [ ] Check custom icon appears
+### End User Setup (Super Easy!)
+- [ ] Download `DocumentProcessorPro_v2.0.zip`
+- [ ] Extract ZIP file to Desktop (or anywhere)
+- [ ] Double-click `DocumentProcessorPro.exe`
+- [ ] Check custom icon appears in window & taskbar
+- [ ] Test with sample PDF files
+
+**Total time: 2 minutes!** ⚡
+
+### Distribution Creator
+- [ ] Build executable: `python simple_build.py`
+- [ ] Create package: `create_distribution.bat`
+- [ ] Verify `DocumentProcessorPro_v2.0.zip` created
+- [ ] Test package on clean Windows system
 
 ### Developer Setup
 - [ ] Clone repository
@@ -119,9 +132,41 @@ python -c "import os; print(os.path.exists('app_icon.png'))"
 
 ### Distribution Ready
 - Standalone 36MB executable
-- No Python installation required
+- Zero-installation ZIP package
 - Portable - runs from any location
 - Custom icon embedded in .exe
+- Includes user guides and launcher
+
+## 📥 Easy Distribution for End Users
+
+### What You Distribute
+Just share **one file**: `DocumentProcessorPro_v2.0.zip` (~37MB)
+
+### What's Inside the ZIP
+```
+DocumentProcessorPro_v2.0.zip
+├── DocumentProcessorPro.exe        # Main application (36MB)
+├── QUICK_START.txt                 # Simple instructions
+├── README_FIRST.txt                # Overview and features
+├── EASY_LAUNCH.bat                 # Alternative launcher
+└── sample_files/                   # Example PDFs to test
+    └── sample_letter.pdf
+```
+
+### User Experience
+1. **Download** one ZIP file
+2. **Extract** anywhere (Desktop, USB drive, etc.)
+3. **Double-click** the .exe file
+4. **Start processing** documents immediately
+
+### Creating the Distribution Package
+```bash
+# For developers - create the distribution package
+python simple_build.py          # Build the executable
+create_distribution.bat         # Package everything for users
+```
+
+This creates `DocumentProcessorPro_v2.0.zip` ready for distribution!
 
 ## 🆘 Quick Fixes
 

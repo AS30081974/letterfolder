@@ -74,13 +74,22 @@ pyinstaller>=5.0.0 (for building executable)
 
 ## 🚀 Installation & Quick Start
 
-### Method 1: Windows Executable (Easiest)
-1. **Download**: Get the latest release from GitHub
-2. **Extract**: Unzip the download to your desired location
-3. **Run**: Double-click `DocumentProcessorPro.exe` in the `dist/` folder
-4. **Ready**: No installation or setup required!
+### Method 1: Ready-to-Use Package (Recommended for End Users)
+**Zero Installation Required!**
 
-### Method 2: Python Source Code
+1. **Download**: [DocumentProcessorPro_v2.0.zip](./DocumentProcessorPro_v2.0.zip) (~37MB)
+2. **Extract**: Right-click ZIP → "Extract All" to any location
+3. **Run**: Double-click `DocumentProcessorPro.exe`
+4. **Start Processing**: Select PDF folder → Process Documents
+
+**What You Get:**
+- ✅ Standalone executable (no Python needed)
+- ✅ Custom professional icon
+- ✅ Quick start guide included
+- ✅ Sample files for testing
+- ✅ Works on any Windows 7+ computer
+
+### Method 2: Python Source Code (For Developers)
 1. **Clone Repository**
    ```bash
    git clone https://github.com/AS30081974/letterfolder.git
@@ -102,14 +111,15 @@ pyinstaller>=5.0.0 (for building executable)
    pip install pyinstaller
    ```
 
-2. **Build Executable**
+2. **Build & Package**
    ```bash
-   python simple_build.py
+   python simple_build.py           # Build executable
+   create_distribution.bat          # Create user-friendly package
    ```
 
-3. **Find Output**
-   - Executable will be created in `dist/DocumentProcessorPro.exe`
-   - Includes custom icon and all dependencies
+3. **Distribute**
+   - Share `DocumentProcessorPro_v2.0.zip` with end users
+   - They just extract and run - no installation needed!
 
 ## � Windows Executable
 
