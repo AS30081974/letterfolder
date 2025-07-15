@@ -1,6 +1,6 @@
-# 🏢📋 Address Extractor Pro
+# �💼 Document Processor Pro
 
-A modern, user-friendly desktop application for extracting addresses from PDF files and saving them to Excel spreadsheets. Built with Python and Tkinter, featuring intelligent printing capabilities with Adobe integration.
+A modern, user-friendly desktop application for processing PDF documents and extracting structured data to Excel spreadsheets. Built with Python and Tkinter, featuring intelligent printing capabilities with Adobe integration.
 
 ## 📋 Table of Contents
 
@@ -18,8 +18,8 @@ A modern, user-friendly desktop application for extracting addresses from PDF fi
 ## ✨ Features
 
 ### Core Functionality
-- **📄 PDF Text Extraction**: Automatically extracts addresses from PDF files using pattern matching
-- **📊 Excel Integration**: Saves extracted addresses to Excel spreadsheets with auto-formatting
+- **📄 PDF Text Extraction**: Automatically extracts structured data from PDF files using pattern matching
+- **📊 Excel Integration**: Saves extracted data to Excel spreadsheets with auto-formatting
 - **🔍 Batch Processing**: Process multiple PDF files in a single operation
 - **🧹 Data Management**: Clear and manage Excel spreadsheet data
 
@@ -76,8 +76,8 @@ pip install PyPDF2 openpyxl
 ```bash
 git clone https://github.com/AS30081974/letterfolder.git
 cd letterfolder
-python -m venv address_extractor_env
-address_extractor_env\Scripts\activate  # Windows
+python -m venv document_processor_env
+document_processor_env\Scripts\activate  # Windows
 pip install -r requirements.txt
 ```
 
@@ -85,7 +85,7 @@ pip install -r requirements.txt
 
 1. **Launch the Application**
    ```bash
-   python pdf_address_extractor_gui.py
+   python document_processor_gui.py
    ```
 
 2. **Select PDF Folder**
@@ -93,11 +93,11 @@ pip install -r requirements.txt
    - Choose the folder containing your PDF files
 
 3. **Set Excel Output**
-   - Specify the Excel file name (default: `addresses.xlsx`)
+   - Specify the Excel file name (default: `extracted_data.xlsx`)
    - File will be created in the same directory if it doesn't exist
 
-4. **Extract Addresses**
-   - Click "🔍 Extract Addresses"
+4. **Process Documents**
+   - Click "🔍 Process Documents"
    - Monitor progress in the status log
 
 5. **Print Documents** (Optional)
@@ -106,9 +106,9 @@ pip install -r requirements.txt
 
 ## 📖 Usage Guide
 
-### Address Extraction Process
+### Document Processing Workflow
 
-The application extracts addresses using pattern matching:
+The application processes documents using intelligent pattern matching:
 
 1. **Pattern Detection**: Searches for text between `uk_team_gbmailgps@lilly.com` and `Dear`
 2. **Text Processing**: Cleans and formats the extracted text
@@ -140,7 +140,7 @@ United Kingdom
 
 ### Excel Output Format
 
-| PDF File | Extracted Address |
+| PDF File | Extracted Data |
 |----------|-------------------|
 | document1.pdf | John Smith<br>123 Main Street<br>Anytown, AN 12345 |
 | document2.pdf | Jane Doe<br>456 Oak Avenue<br>Another City, AC 67890 |
@@ -444,4 +444,4 @@ For enterprise deployments and custom integrations, contact the development team
 
 **Built with ❤️ for efficient document processing**
 
-*Address Extractor Pro - Making address extraction and printing effortless*
+*Document Processor Pro - Making document processing and printing effortless*

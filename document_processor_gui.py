@@ -204,7 +204,7 @@ class DocumentProcessorGUI:
         title_frame = tk.Frame(header_content, bg='white')
         title_frame.pack(anchor=tk.W)
         
-        title_label = ttk.Label(title_frame, text="📄 Document Processor Pro", style='Title.TLabel')
+        title_label = ttk.Label(title_frame, text="�💼 Document Processor Pro", style='Title.TLabel')
         title_label.pack(side=tk.LEFT)
         
         # Subtitle
